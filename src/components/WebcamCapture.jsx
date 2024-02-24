@@ -1,14 +1,20 @@
-import React, { useRef, useCallback, useState } from "react";
+// WebcamCapture.js
+import React, { useRef, useEffect } from "react";
 import Webcam from "react-webcam";
 
-function WebcamCapture() {
+function WebcamCapture({ onVideoElement }) {
   const webcamRef = useRef(null);
-  const [imageSrc, setImageSrc] = useState(null);
 
-  const capture = useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setImageSrc(imageSrc);
-  }, [webcamRef]);
+  useEffect(() => {
+    const videoElement = webcamRef.current?.video;
+    onVideoElement(videoElement);
+  }, [onVideoElement]);
+
+  const videoConstraints = {
+    width: 1280,
+    height: 720,
+    facingMode: "user", // or 'environment' for the rear camera
+  };
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -18,20 +24,9 @@ function WebcamCapture() {
           ref={webcamRef}
           screenshotFormat="image/jpeg"
           className="rounded-md"
+          videoConstraints={videoConstraints}
         />
-        <button
-          onClick={capture}
-          className="absolute bottom-4 left-4 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md focus:outline-none focus:bg-blue-600"
-        >
-          Capture
-        </button>
       </div>
-      {imageSrc && (
-        <div className="ml-4">
-          <h2 className="text-lg font-semibold mb-2">Captured Image:</h2>
-          <img src={imageSrc} alt="Captured" className="rounded-md" />
-        </div>
-      )}
     </div>
   );
 }

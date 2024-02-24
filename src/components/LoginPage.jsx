@@ -1,68 +1,29 @@
 import React, { useState } from "react";
 import WebcamCapture from "./WebcamCapture"; // Assuming the WebcamCapture component is in a separate file
+import ReactPlayer from "react-player";
 
 function LoginPage() {
-  const [showWebcam, setShowWebcam] = useState(false);
+  const handleVideoElement = (videoElement) => {
+    if (videoElement) {
+      videoElement.addEventListener("play", () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const captureInterval = setInterval(() => {
+          ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+          const frameData = canvas.toDataURL("image/jpeg");
+          console.log(frameData); // Log each video frame as Base64 data
+        }, 1000); // Adjust interval as needed
 
-  const handleLoginClick = () => {
-    setShowWebcam(true);
+        // Clear interval when the component unmounts
+        return () => clearInterval(captureInterval);
+      });
+    }
   };
 
   return (
-    <div class="flex justify-center items-center h-screen">
-      <div class="text-center">
-        <div className="w-full text-2xl font-semibold">
-          HANDSIGN RECOGNITION SYSTEM
-        </div>
-
-        <div className="h-20">{""}</div>
-
-        {!showWebcam ? (
-          <div className=" flex items-center justify-center">
-            <form>
-              <button
-                type="button"
-                onClick={handleLoginClick}
-                className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
-              >
-                Get started
-              </button>
-            </form>
-          </div>
-        ) : (
-          <WebcamCapture />
-        )}
-      </div>
+    <div>
+      <WebcamCapture onVideoElement={handleVideoElement} />
     </div>
-    // <div className="bg-blue-300 justify-center items-center h-screen">
-    //   <div
-    //     className="text-black"
-    //     style={{ textAlign: "center", marginTop: "20px" }}
-    //   >
-    //     <h1
-    //       ClassName="w-full text-3xl font-bold text-[#00df9a]"
-    //       style={{ fontWeight: "bold" }}
-    //     >
-    //       HANDSIGN RECOGNITION SYSTEM.
-    //     </h1>
-    //   </div>
-    //   {!showWebcam ? (
-    //     <div className="bg-white p-8 rounded shadow-md w-96 flex items-center justify-center">
-    //       <form>
-    //         <button
-    //           type="button"
-    //           onClick={handleLoginClick}
-    //           className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
-    //         >
-    //           Get started
-    //         </button>
-    //       </form>
-    //     </div>
-    //   ) : (
-    //     <WebcamCapture />
-    //   )}
-    // </div>
   );
 }
-
 export default LoginPage;
